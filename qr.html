@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Redirection...</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+  <p>Redirection en cours...</p>
+
+  <script>
+    const supabase = supabase.createClient(
+      'https://peuxuldjrjokevjkwkki.supabase.co',
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBldXh1bGRqcmpva2V2amt3a2tpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDY0MzMxOTEsImV4cCI6MjA2MjAwOTE5MX0.81qGrsRBFh2ZP2vc-I6ffFX40ZHRolDQ_Gh9oGIy9e'
+    );
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const id = urlParams.get('id');
+
+    if (!id) {
+      document.write("ID non trouvé.");
+    } else {
+      // Récupérer l'URL depuis Supabase et rediriger
+      supabase
+        .from('qrcodes')
+        .select('redirect_url')
+        .eq('id', id)
+        .single()
+        .then(({ data, error }) => {
+          if (error) {
+            document.write("Erreur : " + error.message);
+          } else {
+            window.location.href = data.redirect_url;
+          }
+        });
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Générateur de QR Code Dynamique</title>
+  <script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+  <h1>Créer un QR Code Dynamique</h1>
+  <input type="url" id="redirectUrl" placeholder="Entrez l'URL cible (ex: https://example.com)">
+  <button onclick="generateQR()">Générer QR Code</button>
+  <div id="qrcode"></div>
+
+  <script>
+    const supabase = supabase.createClient(
+      'https://peuxuldjrjokevjkwkki.supabase.co', // Remplacez par votre URL
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBldXh1bGRqcmpva2V2amt3a2tpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDY0MzMxOTEsImV4cCI6MjA2MjAwOTE5MX0.81qGrsRBFh2ZP2vc-I6ffFX40ZHRolDQ_Gh9oGIy9eU' // Remplacez par votre clé publique
+    );
+
+    async function generateQR() {
+      const redirectUrl = document.getElementById('redirectUrl').value;
+      if (!redirectUrl) return alert("Veuillez saisir une URL !");
+
+      // Insérer l'URL dans Supabase
+      const { data, error } = await supabase
+        .from('qrcodes')
+        .insert({ redirect_url: redirectUrl })
+        .select('id')
+        .single();
+
+      if (error) {
+        alert("Erreur : " + error.message);
+        return;
+      }
+
+      // Générer le QR code pointant vers qr.html
+      const qrUrl = `${window.location.origin}/qr.html?id=${data.id}`;
+      QRCode.toCanvas(document.getElementById('qrcode'), qrUrl, (err) => {
+        if (err) console.error(err);
+      });
+    }
+  </script>
+</body>
+</html>
